@@ -10,6 +10,7 @@ DallasTemperature sensors(&oneWire);
 void setup(void) {
   Serial.begin(9600);
   sensors.begin();
+  Serial.println("The program has begun");
 }
 
 void loop(void) {
