@@ -12,7 +12,7 @@ void loop() {
     int favNumber = Serial.parseInt();
     Serial.println("You entered: ");
     Serial.println(favNumber);
-
+    Serial.read();
   }
 
 }
