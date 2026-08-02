@@ -41,15 +41,20 @@ void loop() {
   int beepDelay = map((int)distanceCM, 2 , 400, 250, 500);
   beepDelay = constrain(beepDelay, 250, 500);
 
-  //turns blue, then yellow, then red depending on distance
+  //turns green, then yellow, then red depending on distance
   if (distanceCM >= 100){
-    digitalWrite(6, HIGH);
+    // green
+    digitalWrite(4, HIGH);
   }
   else if (distanceCM > 60){
-    digitalWrite(3,HIGH);
+
+    // yellow, since red and green make yellow
+    digitalWrite(4,HIGH);
+    digitalWrite(6,HIGH);
   }
   else{
-    digitalWrite(4,HIGH);
+    // red
+    digitalWrite(6,HIGH);
   }
 
   // turns on beeper at different speeds depending on the distance
