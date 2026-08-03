@@ -1,7 +1,19 @@
 // uses a buzzer, ultrasonic sensor, and a white LED that has all the colors (RGB)
 
+// Oled libraries
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+// initializing screen
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET -1
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
 int lastButtonState = HIGH;
 bool wantsBuzzer = true;
+String parkingStatus = "SAFE";
 
 void setup() {
   Serial.begin(9600);
@@ -26,7 +38,19 @@ void setup() {
   pinMode(8, INPUT_PULLUP);
 
   // Oled
-  //Whatever code for the OLED
+  // initialization code for the oled, starts it and ends program if oled doesnt work
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    Serial.println("OLED failed");
+    while (true);
+  }
+
+  // starts with a blank screen
+  display.clearDisplay();
+  display.display();
+
+  // constant font and color 
+  display.setTextColor(SSD1306_WHITE);
+  display.setTextSize(1);
 
 }
 
@@ -37,13 +61,6 @@ void loop() {
 
   if (buttonState == LOW && lastButtonState == HIGH) {
     wantsBuzzer = !wantsBuzzer;
-
-    if (wantsBuzzer) {
-      Serial.println("Buzzer enabled");
-    } 
-    else {
-      Serial.println("Buzzer disabled");
-    }
   }
 
   if (buttonState != lastButtonState) {
@@ -51,7 +68,6 @@ void loop() {
   }
 
   lastButtonState = buttonState;
-
 
   // triggers sound for sensor
   digitalWrite(2, LOW);
@@ -83,16 +99,19 @@ void loop() {
   if (distanceCM >= 100){
     // green
     digitalWrite(4, HIGH);
+    parkingStatus = "SAFE";
   }
   else if (distanceCM > 60){
 
     // yellow
     digitalWrite(4,HIGH);
     digitalWrite(6,HIGH);
+    parkingStatus = "CLOSE";
   }
   else{
     // red
     digitalWrite(6,HIGH);
+    parkingStatus = "TOO CLOSE";
   }
 
 
@@ -119,4 +138,27 @@ void loop() {
     noTone(9);
     buzzerOn = false;
   }
+
+  // Oled code
+  display.clearDisplay(); 
+  display.setTextSize(1);
+  display.setCursor(0,0);
+
+  // printing distance and status 
+  display.print("Distance: ");
+  display.println((int)distanceCM);
+  display.print("Status: ");
+  display.println(parkingStatus);
+
+  // 
+  display.print("Button: ");
+  if (wantsBuzzer){
+    display.print("ON");
+  }
+  else {
+    display.print("OFF");
+  }
+
+  // actually displays everything to the screen 
+  display.display();
 }
