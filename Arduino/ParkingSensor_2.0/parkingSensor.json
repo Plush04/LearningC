@@ -16,7 +16,7 @@
       "id": "ultrasonic1",
       "top": -123.3,
       "left": -167.3,
-      "attrs": { "distance": "26" }
+      "attrs": { "distance": "13" }
     },
     {
       "type": "wokwi-buzzer",
@@ -28,16 +28,16 @@
     {
       "type": "board-ssd1306",
       "id": "oled1",
-      "top": 175.94,
-      "left": 297.83,
+      "top": 195.14,
+      "left": 317.03,
       "attrs": { "i2cAddress": "0x3c" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn1",
-      "top": 73.4,
-      "left": 384,
-      "attrs": { "color": "green", "xray": "1" }
+      "top": 25.4,
+      "left": 336,
+      "attrs": { "color": "red", "xray": "1" }
     }
   ],
   "connections": [
@@ -51,12 +51,12 @@
     [ "bz1:2", "uno:GND.1", "red", [ "v0" ] ],
     [ "uno:9", "bz1:1", "black", [ "v0" ] ],
     [ "rgb1:COM", "uno:GND.3", "green", [ "v268.4", "h-38.3" ] ],
-    [ "uno:8", "btn1:1.r", "magenta", [ "v0" ] ],
-    [ "btn1:2.r", "uno:GND.3", "purple", [ "h0" ] ],
     [ "oled1:GND", "uno:GND.2", "black", [ "v0" ] ],
     [ "oled1:VCC", "uno:5V", "yellow", [ "v0" ] ],
     [ "oled1:SCL", "uno:A5", "green", [ "v0" ] ],
-    [ "oled1:SDA", "uno:A4", "green", [ "v0" ] ]
+    [ "oled1:SDA", "uno:A4", "green", [ "v0" ] ],
+    [ "btn1:1.r", "uno:8", "red", [ "v-28.8", "h48.2" ] ],
+    [ "btn1:2.r", "uno:GND.2", "red", [ "h0.2", "v67.4", "h-240" ] ]
   ],
   "dependencies": {}
 }
