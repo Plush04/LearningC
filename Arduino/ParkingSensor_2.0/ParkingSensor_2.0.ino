@@ -14,6 +14,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 int lastButtonState = HIGH;
 bool wantsBuzzer = true;
 String parkingStatus = "SAFE";
+int totalDistance;
 
 void setup() {
   Serial.begin(9600);
@@ -69,6 +70,10 @@ void loop() {
 
   lastButtonState = buttonState;
 
+  // finds the time and distance
+  totalDistance = 0;
+
+  for(int i = 1; i <= 5; i++){
   // triggers sound for sensor
   digitalWrite(2, LOW);
   delayMicroseconds(2);
@@ -78,13 +83,15 @@ void loop() {
 
   digitalWrite(2, LOW);
 
-
-  // finds the time and distance
   long tripTime = pulseIn(10,HIGH);
   int distanceCM = tripTime / 58.0;
+  totalDistance += distanceCM;
+  }
+
+  int avgDistance = totalDistance / 5;
 
   // for the delay between beeps
-  int beepDelay = map((int)distanceCM, 2 , 100, 250, 500);
+  int beepDelay = map(avgDistance, 2 , 100, 250, 500);
   beepDelay = constrain(beepDelay, 250, 500);
 
 
@@ -95,22 +102,34 @@ void loop() {
 
 
   //turns green, then yellow, then red depending on distance
-  if (distanceCM >= 100){
+  if (avgDistance >= 100){
     // green
     digitalWrite(4, HIGH);
     parkingStatus = "SAFE";
   }
-  else if (distanceCM > 60){
+  else if (avgDistance > 60){
 
     // yellow
     digitalWrite(4,HIGH);
     digitalWrite(6,HIGH);
     parkingStatus = "CLOSE";
   }
+  else if (avgeDistance> 15){
+    //Red 
+    digitalWrite(6,HIGH);
+    parkingStatus = "TOO CLOSE";
+  }
+  else if (avgDistance == 0){
+    // sensor failed
+    parkingStatus = "SENSOR ERROR";
+  }
   else{
     // red
     digitalWrite(6,HIGH);
-    parkingStatus = "TOO CLOSE";
+    delay(100);
+    digitalWrite(6,LOW);
+    delay(100);
+    parkingStatus = "CAR NEARLY TOTALED";
   }
 
 
@@ -118,7 +137,7 @@ void loop() {
   static unsigned long lastBeepTime = 0;
   static bool buzzerOn = false;
 
-  if (wantsBuzzer && distanceCM < 100) {
+  if (wantsBuzzer && avgDistance < 100) {
 
     if (millis() - lastBeepTime >= beepDelay) {
       lastBeepTime = millis();
@@ -143,7 +162,7 @@ void loop() {
   display.setTextSize(1);
   display.setCursor(0,0);
 
-  float meters = distanceCM/100.0;
+  float meters = avgDistance/100.0;
 
   // printing distance and status 
   display.print("Distance: ");
