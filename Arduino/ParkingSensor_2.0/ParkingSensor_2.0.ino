@@ -81,8 +81,7 @@ void loop() {
 
   // finds the time and distance
   long tripTime = pulseIn(10,HIGH);
-  float distanceCM = tripTime / 58.0;
-
+  int distanceCM = tripTime / 58.0;
 
   // for the delay between beeps
   int beepDelay = map((int)distanceCM, 2 , 100, 250, 500);
@@ -144,9 +143,12 @@ void loop() {
   display.setTextSize(1);
   display.setCursor(0,0);
 
+  float meters = distanceCM/100.0;
+
   // printing distance and status 
   display.print("Distance: ");
-  display.println((int)distanceCM);
+  display.print(meters);
+  display.println(" meters");
   display.print("Status: ");
   display.println(parkingStatus);
 
