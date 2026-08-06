@@ -30,11 +30,4 @@ An embedded parking assistance system using an Arduino Uno, ultrasonic sensor, O
 - ERROR
 
 ## Demo
-
-OLED Display:
-
-![OLED Demo](screenshots/Oled_screen.png)
-
-Circuit:
-
-![Circuit](screenshots/Circuit_wiring.png)
+Check the "Screenshots" folder to see the wiring and how the oled looks like 
