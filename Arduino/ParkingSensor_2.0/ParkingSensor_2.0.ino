@@ -3,14 +3,37 @@
 #include "LED.h"
 #include "Buzzer.h"
 #include "Button.h"
-
+#include "States.h"
 
 bool wantsBuzzer = true;
-String parkingStatus = "SAFE";
+ParkingState currentState = SAFE;
 
+ParkingState getParkingState(int distance){
+  // Update parking status
+  if (distance == -1){
+    return ERROR;
+  }
+  else if (distance >= 100) {
+    return SAFE; 
+
+  }
+  else if (distance > 60) {
+    return CLOSE;
+
+  }
+  else if (distance > 20){
+    return TOO_CLOSE;
+  }
+  else if (distance > 0){
+    return COLLISION_WARNING;
+
+  }else{
+    return ERROR;
+  }
+}
 
 void setup() {
-
+  // sets everything up 
   Serial.begin(9600);
 
   setupSensor();
@@ -18,48 +41,26 @@ void setup() {
   setupLED();
   setupBuzzer();
   setupButton();
-
 }
-
 
 void loop() {
 
   // Button input
   readButton(wantsBuzzer);
 
-
   // Get distance
   int distance = getAverageDistance();
 
-
-  // Update parking status
-  if (distance >= 100) {
-
-    parkingStatus = "SAFE";
-
-  }
-  else if (distance > 60) {
-
-    parkingStatus = "CLOSE";
-
-  }
-  else {
-
-    parkingStatus = "TOO CLOSE";
-
-  }
-
+  currentState = getParkingState(distance);
 
   // Control outputs
-  updateLED(distance);
-
-  updateBuzzer(distance, wantsBuzzer);
-
+  updateLED(currentState);
+  updateBuzzer(currentState, wantsBuzzer);
 
   // Update OLED
   updateDisplay(
     distance,
-    parkingStatus,
+    currentState,
     wantsBuzzer
   );
 

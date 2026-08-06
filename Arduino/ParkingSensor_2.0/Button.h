@@ -1,9 +1,9 @@
-#ifndef BUZZER_H
-#define BUZZER_H
+#ifndef BUTTON_H
+#define BUTTON_H
 
 #include <Arduino.h>
 
-void setupBuzzer();
-void updateBuzzer(int distance, bool wantsBuzzer);
+void setupButton();
+void readButton(bool &wantsBuzzer);
 
 #endif

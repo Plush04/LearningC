@@ -1,5 +1,5 @@
 #include "OLED.h"
-
+#include "States.h"
 #include <Arduino.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -27,22 +27,72 @@ void setupDisplay() {
     display.display();
 
     display.setTextColor(SSD1306_WHITE);
-    display.setTextSize(1);
-}
+    display.setTextSize(2);
 
-void updateDisplay(int distance, String parkingStatus, bool wantsBuzzer) {
+    display.println("Parking ");
+    display.println("Assistant");
+    display.print("Turning on...");
+    display.display();
+    delay(2000);
+    display.clearDisplay();
+}
+String stateToString(ParkingState state){
+
+    if(state == SAFE){
+        return "SAFE";
+    }
+
+    else if(state == CLOSE){
+        return "CLOSE";
+    }
+
+    else if(state == TOO_CLOSE){
+        return "TOO CLOSE";
+    }
+
+    else if(state == COLLISION_WARNING){
+        return "COLLISION";
+    }
+
+    else{
+        return "ERROR";
+    }
+  }
+void drawDistanceBar(int distance){
+
+    int barWidth = map(distance, 0, 100, 128, 0);
+
+    barWidth = constrain(barWidth, 0, 128);
+
+    // Draw border
+    display.drawRect(0, 50, 128, 10, SSD1306_WHITE);
+
+    // Clear inside of bar
+    display.fillRect(1, 51, 126, 8, SSD1306_BLACK);
+
+    // Draw new bar
+    display.fillRect(1, 51, barWidth - 2, 8, SSD1306_WHITE);
+}
+void updateDisplay(int distance, ParkingState state, bool wantsBuzzer) {
 
     display.clearDisplay();
     display.setCursor(0,0);
+    display.setTextSize(1);
 
-    float meters = distance / 100.0;
+    if (distance == -1){
+        display.println("Sensor Error");
+    } 
+    else {
 
-    display.print("Distance: ");
-    display.print(meters);
-    display.println(" meters");
+        float meters = distance / 100.0;
 
+        display.print("Distance: ");
+        display.print(meters);
+        display.println(" meters");
+
+    }
     display.print("Status: ");
-    display.println(parkingStatus);
+    display.println(stateToString(state));
 
     display.print("Button: ");
 
@@ -52,6 +102,8 @@ void updateDisplay(int distance, String parkingStatus, bool wantsBuzzer) {
     else {
         display.println("OFF");
     }
-
+    if(distance != -1){
+        drawDistanceBar(distance);
+    }
     display.display();
 }
